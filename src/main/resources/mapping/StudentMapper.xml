@@ -1,0 +1,187 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.itcod.sms.mapper.StudentMapper" >
+  <resultMap id="BaseResultMap" type="cn.itcod.sms.pojo.Student" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="name" property="name" jdbcType="VARCHAR" />
+    <result column="age" property="age" jdbcType="INTEGER" />
+    <result column="bir" property="bir" jdbcType="TIMESTAMP" />
+    <result column="phone" property="phone" jdbcType="VARCHAR" />
+    <result column="qq" property="qq" jdbcType="VARCHAR" />
+    <result column="attr" property="attr" jdbcType="VARCHAR" />
+    <result column="starts" property="starts" jdbcType="VARCHAR" />
+    <result column="mark" property="mark" jdbcType="VARCHAR" />
+    <association property="city" javaType="City">
+      <result column="cityname" property="name"/>
+    </association>
+    <association property="clazz" javaType="Class">
+      <result column="classname" property="name"/>
+    </association>
+    <association property="group" javaType="Group">
+      <result column="groupname" property="name"/>
+    </association>
+  </resultMap>
+  <sql id="Base_Column_List" >
+    s.id, s.name, s.age, s.bir, s.phone, s.qq, s.attr, s.starts, s.mark,
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_student
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from t_student
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="cn.itcod.sms.pojo.Student" >
+    insert into t_student (id, name, age,
+      bir, phone, qq, attr, 
+      starts, mark, cityid, 
+      clazzid, groupid)
+    values (#{id,jdbcType=INTEGER}, #{name,jdbcType=VARCHAR}, #{age,jdbcType=INTEGER}, 
+      #{bir,jdbcType=TIMESTAMP}, #{phone,jdbcType=VARCHAR}, #{qq,jdbcType=VARCHAR}, #{attr,jdbcType=VARCHAR}, 
+      #{starts,jdbcType=VARCHAR}, #{mark,jdbcType=VARCHAR}, #{cityid,jdbcType=INTEGER}, 
+      #{clazzid,jdbcType=INTEGER}, #{groupid,jdbcType=INTEGER})
+  </insert>
+  <insert id="insertSelective" parameterType="cn.itcod.sms.pojo.Student" >
+    insert into t_student
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="name != null" >
+        name,
+      </if>
+      <if test="age != null" >
+        age,
+      </if>
+      <if test="bir != null" >
+        bir,
+      </if>
+      <if test="phone != null" >
+        phone,
+      </if>
+      <if test="qq != null" >
+        qq,
+      </if>
+      <if test="attr != null" >
+        attr,
+      </if>
+      <if test="starts != null" >
+        starts,
+      </if>
+      <if test="mark != null" >
+        mark,
+      </if>
+      <if test="cityid != null" >
+        cityid,
+      </if>
+      <if test="clazzid != null" >
+        clazzid,
+      </if>
+      <if test="groupid != null" >
+        groupid,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="name != null" >
+        #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="age != null" >
+        #{age,jdbcType=INTEGER},
+      </if>
+      <if test="bir != null" >
+        #{bir,jdbcType=TIMESTAMP},
+      </if>
+      <if test="phone != null" >
+        #{phone,jdbcType=VARCHAR},
+      </if>
+      <if test="qq != null" >
+        #{qq,jdbcType=VARCHAR},
+      </if>
+      <if test="attr != null" >
+        #{attr,jdbcType=VARCHAR},
+      </if>
+      <if test="starts != null" >
+        #{starts,jdbcType=VARCHAR},
+      </if>
+      <if test="mark != null" >
+        #{mark,jdbcType=VARCHAR},
+      </if>
+      <if test="cityid != null" >
+        #{cityid,jdbcType=INTEGER},
+      </if>
+      <if test="clazzid != null" >
+        #{clazzid,jdbcType=INTEGER},
+      </if>
+      <if test="groupid != null" >
+        #{groupid,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+
+  <update id="updateByPrimaryKey" parameterType="cn.itcod.sms.pojo.Student" >
+    update t_student
+    set name = #{name,jdbcType=VARCHAR},
+      age = #{age,jdbcType=INTEGER},
+      bir = #{bir,jdbcType=TIMESTAMP},
+      phone = #{phone,jdbcType=VARCHAR},
+      qq = #{qq,jdbcType=VARCHAR},
+      attr = #{attr,jdbcType=VARCHAR},
+      starts = #{starts,jdbcType=VARCHAR},
+      mark = #{mark,jdbcType=VARCHAR},
+      cityid = #{cityid,jdbcType=INTEGER},
+      clazzid = #{clazzid,jdbcType=INTEGER},
+      groupid = #{groupid,jdbcType=INTEGER}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <select id="selectByName" parameterType="java.lang.String">
+    select count(*)
+    from t_student
+    where name = #{name}
+  </select>
+  <select id="selectByPhone" parameterType="java.lang.String" resultType="java.lang.Integer">
+    select id
+    from t_student
+    where phone = #{phone};
+  </select>
+  <select id="findByAll" resultMap="BaseResultMap">
+    select <include refid="Base_Column_List"></include>
+    c.name cityname, cl.name classname, g.name groupname
+    from t_student s
+    left join t_city c on c.id = s.cityid
+    left join t_class cl on cl.id = s.clazzid
+    left join t_group g on g.id = s.groupid
+  </select>
+
+  <select id="selectStudentTagById" resultType="java.lang.String">
+    select DISTINCT t.name tagname
+    from t_student_tag s, t_tag t,(select DISTINCT tagid from t_student_tag, t_student where studentid = #{id}) ts
+    where t.id = ts.tagid
+  </select>
+  <select id="selectSelective" resultMap="BaseResultMap">
+    select <include refid="Base_Column_List"></include>
+    c.name cityname, cl.name classname, g.name groupname
+    from t_student s
+    left join t_city c on c.id = s.cityid
+    left join t_class cl on cl.id = s.clazzid
+    left join t_group g on g.id = s.groupid
+    where
+      <if test="c == 'name'" >
+        s.name like concat('%',#{v,jdbcType=VARCHAR},'%');
+      </if>
+      <if test="c == 'phone'" >
+        s.phone like concat('%',#{v,jdbcType=VARCHAR},'%');
+      </if>
+      <if test="c == 'qq'" >
+        s.qq like concat('%',#{v,jdbcType=VARCHAR},'%');
+      </if>
+      <if test="c == 'classname'" >
+        s.clazzid in (select clazzid from t_class where name like concat('%',#{v,jdbcType=INTEGER},'%'));
+      </if>
+  </select>
+</mapper>

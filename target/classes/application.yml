@@ -1,0 +1,38 @@
+spring:
+  mvc:
+    view:
+      prefix: /
+      suffix: .jsp
+  application:
+    name: sms #应用服务名称
+  datasource:
+    driver-class-name: com.mysql.jdbc.Driver #注册驱动
+    url: jdbc:mysql://localhost:3306/sms?characterEncoding=UTF-8
+    username: root
+    password: 123456
+  redis:
+    database: 10
+    host: localhost
+    port: 6379
+    password: 1234
+    jedis:
+      pool:
+        max-wait: 20
+server:
+  port: 8080
+  servlet:
+    context-path: /sms
+    jsp:
+      init-parameters:
+        development: true
+    session:
+      timeout: 2592000
+
+mybatis:
+  mapper-locations: classpath:mapping/*.xml #mapper配置文件的位置
+  type-aliases-package: cn.itcod.sms.pojo #设置别名包
+
+#设置日志的显示级别,level中是以<k,v>存储的
+logging:
+  level:
+    cn.itcod.sms.mapper: debug

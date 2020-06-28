@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.itcod.sms.mapper.GroupMapper" >
+  <resultMap id="BaseResultMap" type="cn.itcod.sms.pojo.Group" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="name" property="name" jdbcType="VARCHAR" />
+    <result column="content" property="content" jdbcType="VARCHAR" />
+    <result column="clazzid" property="clazzid" jdbcType="INTEGER" />
+    <association property="c" javaType="cn.itcod.sms.pojo.Class">
+      <id column="classid" property="id"/>
+      <result column="classname" property="name"/>
+    </association>
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, name, content, clazzid
+  </sql>
+
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from t_group
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+
+  <insert id="insert" parameterType="cn.itcod.sms.pojo.Group">
+    insert into t_group(name, content, clazzid)
+    values (#{name}, #{content}, #{clazzid})
+  </insert>
+
+  <update id="updateByPrimaryKey" parameterType="cn.itcod.sms.pojo.Group" >
+    update t_group
+    set name = #{name,jdbcType=VARCHAR},
+      content = #{content,jdbcType=VARCHAR},
+      clazzid = #{clazzid,jdbcType=INTEGER}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+
+  <select id="findByAll" resultMap="BaseResultMap">
+    select g.id, g.name, g.content, c.id as classid, c.name as classname
+    from t_group g
+    LEFT join t_class c on g.clazzid = c.id
+  </select>
+
+  <select id="selectByClassId" resultMap="BaseResultMap">
+    select <include refid="Base_Column_List"></include>
+    from t_group g
+    where g.clazzid = #{id};
+  </select>
+  <resultMap id="groupTag" type="cn.itcod.sms.pojo.GroupTag" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="name" property="name" jdbcType="VARCHAR" />
+  </resultMap>
+  <select id="selectByGroupTag" resultMap="groupTag">
+    SELECT DISTINCT gt.id, t.name
+    from t_tag t
+    left join (SELECT g.id, st.tagid
+    FROM t_group g
+    left join (select s.id , s.name, s.groupid, ts.tagid
+    from t_student s
+    left join t_student_tag ts on ts.studentid = s.id) st on st.groupid =  g.id) gt on gt.tagid = t.id
+    where gt.id is not null
+  </select>
+</mapper>
